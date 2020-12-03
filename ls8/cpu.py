@@ -1,13 +1,17 @@
 """CPU functionality."""
 
 import sys
-
+HLT = 0b00000001
+LDI = 0b10000010
+PRN = 0b01000111
 class CPU:
     """Main CPU class."""
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
+        self.pc = 0
+        self.ram = [0] * 256
+        self.reg = [0] * 8
 
     def load(self):
         """Load a program into memory."""
@@ -62,4 +66,30 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        Running = True
+        while Running:
+          ir = self.ram_read(self.pc)
+          operand_a = self.ram_read(self.pc + 1)
+          operand_b = self.ram_read(self.pc + 2)
+          if ir == HLT:
+            Running = False
+            sys.exit(0)
+          elif ir == LDI:
+            self.reg[operand_a] = operand_b
+            self.pc += 3
+          elif ir == PRN:
+            ans = self.reg[operand_a]
+            print(ans)
+            self.pc += 2
+
+
+        
+    
+    def ram_read(self, memory):
+      return self.ram[memory]
+    
+    def ram_write(self, memory, value):
+      self.ram[memory] = value
+    
+    def binaryToDecimal(self, n):
+      return int(n,2)
