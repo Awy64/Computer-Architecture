@@ -4,6 +4,7 @@ import sys
 HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
+MUL = 0b10100010
 class CPU:
     """Main CPU class."""
 
@@ -13,22 +14,10 @@ class CPU:
         self.ram = [0] * 256
         self.reg = [0] * 8
 
-    def load(self):
+    def load(self, program):
         """Load a program into memory."""
 
         address = 0
-
-        # For now, we've just hardcoded a program:
-
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
 
         for instruction in program:
             self.ram[address] = instruction
@@ -81,6 +70,10 @@ class CPU:
             ans = self.reg[operand_a]
             print(ans)
             self.pc += 2
+          elif ir == MUL:
+            ans = self.reg[operand_a] * self.reg[operand_b]
+            self.reg[operand_a] = ans
+            self.pc += 3
 
 
         
