@@ -5,6 +5,8 @@ HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
 MUL = 0b10100010
+PUSH = 0b01000101
+POP = 0b01000110
 class CPU:
     """Main CPU class."""
 
@@ -13,6 +15,8 @@ class CPU:
         self.pc = 0
         self.ram = [0] * 256
         self.reg = [0] * 8
+        self.reg[7] = 256
+        self.SP = 256
 
     def load(self, program):
         """Load a program into memory."""
@@ -22,6 +26,8 @@ class CPU:
         for instruction in program:
             self.ram[address] = instruction
             address += 1
+
+        
 
 
     def alu(self, op, reg_a, reg_b):
@@ -60,6 +66,7 @@ class CPU:
           ir = self.ram_read(self.pc)
           operand_a = self.ram_read(self.pc + 1)
           operand_b = self.ram_read(self.pc + 2)
+          
           if ir == HLT:
             Running = False
             sys.exit(0)
@@ -74,6 +81,17 @@ class CPU:
             ans = self.reg[operand_a] * self.reg[operand_b]
             self.reg[operand_a] = ans
             self.pc += 3
+          elif ir == PUSH:
+            self.SP -= 1
+            self.ram[self.SP] = self.reg[operand_a]
+            self.pc += 2
+          elif ir == POP:
+            self.reg[operand_a] = self.ram[self.SP]
+            self.SP += 1
+            self.pc += 2
+          else:
+            print('Error')
+
 
 
         
