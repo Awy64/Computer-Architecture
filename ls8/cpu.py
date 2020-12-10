@@ -7,6 +7,9 @@ PRN = 0b01000111
 MUL = 0b10100010
 PUSH = 0b01000101
 POP = 0b01000110
+CALL = 0b01010000
+RET = 0b00010001
+ADD = 0b10100000
 class CPU:
     """Main CPU class."""
 
@@ -25,6 +28,7 @@ class CPU:
 
         for instruction in program:
             self.ram[address] = instruction
+            # print("{:08b}".format(instruction))
             address += 1
 
         
@@ -89,8 +93,19 @@ class CPU:
             self.reg[operand_a] = self.ram[self.SP]
             self.SP += 1
             self.pc += 2
+          elif ir == CALL:
+            self.SP -= 1
+            self.ram[self.SP] = self.pc + 2
+            self.pc = self.reg[operand_a]
+          elif ir == RET:
+            self.pc = self.ram[self.SP]
+            self.SP += 1
+          elif ir == ADD:
+            self.reg[operand_a] = self.reg[operand_a] + self.reg[operand_b]
+            self.pc += 3
           else:
-            print('Error')
+            print('Error', self.pc)
+            self.pc += 1
 
 
 
