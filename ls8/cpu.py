@@ -10,6 +10,11 @@ POP = 0b01000110
 CALL = 0b01010000
 RET = 0b00010001
 ADD = 0b10100000
+CMP = 0b10100111
+JMP = 0b01010100
+JEQ = 0b01010101
+JNE = 0b01010110
+ADDI = 0b10001000
 class CPU:
     """Main CPU class."""
 
@@ -20,6 +25,7 @@ class CPU:
         self.reg = [0] * 8
         self.reg[7] = 256
         self.SP = 256
+        self.FL = 0b00000000
 
     def load(self, program):
         """Load a program into memory."""
@@ -102,6 +108,33 @@ class CPU:
             self.SP += 1
           elif ir == ADD:
             self.reg[operand_a] = self.reg[operand_a] + self.reg[operand_b]
+            self.pc += 3
+          elif ir == CMP:
+            op1 = self.reg[operand_a]
+            op2 = self.reg[operand_b]
+            if op1 > op2:
+              self.FL = 0b00000010
+              self.pc += 3
+            elif op1 < op2:
+              self.FL = 0b00000100
+              self.pc += 3
+            else:
+              self.FL = 0b00000001
+              self.pc += 3
+          elif ir == JMP:
+            self.pc = self.reg[operand_a]
+          elif ir == JEQ:
+            if self.FL == 0b00000001:
+              self.pc = self.reg[operand_a]
+            else:
+              self.pc += 2
+          elif ir == JNE:
+            if self.FL != 0b00000001:
+              self.pc = self.reg[operand_a]
+            else:
+              self.pc += 2
+          elif ir == ADDI:
+            self.reg[operand_a] = self.reg[operand_a] + operand_b
             self.pc += 3
           else:
             print('Error', self.pc)
